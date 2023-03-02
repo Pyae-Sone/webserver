@@ -18,31 +18,26 @@ with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as s:
         client_count += 1
         print(f'New client connected. There are now {client_count} clients connected.')
         request = client.recv(1024).decode()
+        if not request:
+            continue
 
         headers = request.split('\n')
+        if len(headers) < 2:
+            continue
+
         filename = headers[0].split()[1]
 
         if filename == '/':
             filename = 'index.html'
-        elif filename == '/upload,html':
-            u_content = 'upload.html'
-            response = 'HTTP/1.0 200 OK\n\n ' + u_content.encode()
+        elif filename == '/upload.html':
+            with open('upload.html', 'rb') as f:
+                u_content = f.read()
+            response = b'HTTP/1.0 200 OK\n\n' + u_content
             client.sendall(response)
-
-            filedata = b''
-
-            while True:
-                data = client.recv(1024)
-                if not data:
-                    break
-                filedata += data
-            upload_file(filedata)
-            # Send response back to client
-            response = 'HTTP/1.0 200 OK\n\nFile uploaded successfully'
-            client.sendall(response.encode())
             client.close()
             continue
-
+        else:
+            filename = filename[1:]
 
         try:
             www = open(filename)
