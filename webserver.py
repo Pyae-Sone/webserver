@@ -29,13 +29,6 @@ with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as s:
 
         if filename == '/':
             filename = 'index.html'
-        elif filename == '/upload.html':
-            with open('upload.html', 'rb') as f:
-                u_content = f.read()
-            response = b'HTTP/1.0 200 OK\n\n' + u_content
-            client.sendall(response)
-            client.close()
-            continue
         else:
             filename = filename[1:]
 
