@@ -6,6 +6,7 @@ with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as s:
     ip = '0.0.0.0'
     port = 5554
     client_count = 0
+    uploaded_files = []
     logging.basicConfig(filename='server.log', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     s.bind((ip, port))
