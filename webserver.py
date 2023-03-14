@@ -1,6 +1,8 @@
 import socket
+import os
 from fileupload import upload_file
 import logging
+from mime import MimeTypes
 
 with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as s:
     ip = '0.0.0.0'
@@ -27,18 +29,20 @@ with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as s:
             continue
 
         filename = headers[0].split()[1]
+        file_extension = os.path.splitext(filename)[1]
+        mime_type = MimeTypes.get(file_extension, 'application/octet-stream')
 
         if filename == '/':
-            filename = 'index.html'
+            filename = 'index.html' 
         else:
             filename = filename[1:]
 
         try:
-            www = open(filename)
+            www = open(filename, 'rb')
             content = www.read()
             www.close()
 
-            response = 'HTTP/1.0 200 OK\n\n ' + content
+            response = f'HTTP/1.1 200 OK\nContent-Type: {mime_type}\n\n'.encode() + content
 
         except FileNotFoundError:
             file = open('404.html')
